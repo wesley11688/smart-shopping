@@ -7,11 +7,26 @@ import Searchlist from '@/views/search/list.vue'
 import Prodetail from '@/views/prodetail/index.vue'
 import Myorder from '@/views/myorder/index.vue'
 import Pay from '@/views/pay/index.vue'
+// 二級路由
+import Home from '@/views/layout/home.vue'
+import Category from '@/views/layout/categroy.vue'
+import Cart from '@/views/layout/cart.vue'
+import User from '@/views/layout/user.vue'
 
 Vue.use(VueRouter)
 
 const routes = [
-  { path: '/', component: Layout },
+  {
+    path: '/',
+    component: Layout,
+    children: [
+      { path: 'home', component: Home },
+      { path: 'categray', component: Category },
+      { path: 'cart', component: Cart },
+      { path: 'user', component: User }
+
+    ]
+  },
   { path: '/login', component: Login },
   { path: '/search', component: Search },
   { path: '/searchlist', component: Searchlist },

@@ -1,5 +1,6 @@
 // 按需導入
 import Vue from 'vue'
-import { Button, Rate } from 'vant'
-Vue.use(Button)
-Vue.use(Rate)
+import { Tabbar, TabbarItem, Icon } from 'vant'
+Vue.use(Tabbar)
+Vue.use(TabbarItem)
+Vue.use(Icon)

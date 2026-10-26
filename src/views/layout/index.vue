@@ -1,6 +1,11 @@
 <template>
   <div id="">
-    我是layout
+  <van-tabbar v-model="active">
+  <van-tabbar-item icon="shop">首頁</van-tabbar-item>
+  <van-tabbar-item icon="bars">分類</van-tabbar-item>
+  <van-tabbar-item icon="shopping-cart">購物車</van-tabbar-item>
+  <van-tabbar-item icon="user">我的</van-tabbar-item>
+</van-tabbar>
   </div>
 </template>
 
@@ -9,7 +14,9 @@ export default {
   name: 'LayoutIndex',
   components: {},
   data () {
-    return {}
+    return {
+      active: 0
+    }
   },
   methods: {}
 }
