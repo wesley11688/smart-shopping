@@ -1,11 +1,12 @@
 <template>
   <div class="">
-
+    我是search
   </div>
 </template>
 
 <script>
 export default {
+  name: 'SearchIndex',
   components: {},
   data () {
     return {}
