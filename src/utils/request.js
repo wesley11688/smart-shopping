@@ -9,6 +9,7 @@ const instance = axios.create({
 instance.interceptors.request.use(
   function (config) {
     // 在请求发送之前执行某些操作
+    config.headers.platform = 'H5'
     return config
   },
   function (error) {
