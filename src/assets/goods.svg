@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200">
+  <rect width="200" height="200" fill="#f2f2f2"/>
+  <rect x="60" y="62" width="80" height="64" rx="8" fill="none" stroke="#c8c8c8" stroke-width="6"/>
+  <circle cx="84" cy="86" r="8" fill="#c8c8c8"/>
+  <path d="M66 120l26-22 16 14 12-10 16 18" fill="none" stroke="#c8c8c8" stroke-width="6" stroke-linejoin="round"/>
+  <text x="100" y="156" text-anchor="middle" font-size="14" font-family="-apple-system, sans-serif" fill="#999">商品圖片</text>
+</svg>

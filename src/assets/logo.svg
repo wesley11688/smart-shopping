@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="160" height="60" viewBox="0 0 160 60">
+  <rect x="4" y="10" width="40" height="40" rx="10" fill="#fe5630"/>
+  <path d="M16 24h16l-2 16H18z" fill="none" stroke="#fff" stroke-width="3" stroke-linejoin="round"/>
+  <path d="M20 24a4 4 0 0 1 8 0" fill="none" stroke="#fff" stroke-width="3"/>
+  <text x="54" y="38" font-size="20" font-weight="600" font-family="-apple-system, sans-serif" fill="#333">智慧商城</text>
+</svg>

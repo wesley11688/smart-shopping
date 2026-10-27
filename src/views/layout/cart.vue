@@ -1,6 +1,6 @@
 <template>
   <div class="">
-
+    我是cart
   </div>
 </template>
 
