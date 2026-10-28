@@ -25,7 +25,7 @@
         </div>
         <!-- 簡訊驗證碼 -->
         <div class="form-item">
-          <input v-model="smsCode" class="inp" maxlength="6" placeholder="請輸入簡訊驗證碼" type="text">
+          <input @keydown.enter="login" v-model="smsCode" class="inp" maxlength="6" placeholder="請輸入簡訊驗證碼" type="text">
           <button ref="btn" class="code-btn" @click="getCode">{{ second === totalSecond ? '獲取驗證碼' : second  + '秒後重新發送' }}</button>
         </div>
       </div>
@@ -111,6 +111,8 @@ export default {
         return Toast('請輸入正確的驗證碼')
       }
       const res = await codeLogin(this.mobile, this.smsCode)
+      console.log(res)
+      this.$store.commit('user/setUserInfo', res.data)
       console.log(res)
       if (res.status === 200) {
         Toast('登錄成功')
