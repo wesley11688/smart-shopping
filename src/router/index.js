@@ -12,6 +12,7 @@ import Home from '@/views/layout/home.vue'
 import Category from '@/views/layout/categroy.vue'
 import Cart from '@/views/layout/cart.vue'
 import User from '@/views/layout/user.vue'
+import store from '@/store'
 
 Vue.use(VueRouter)
 
@@ -39,6 +40,25 @@ const routes = [
 
 const router = new VueRouter({
   routes
+})
+// 路由守卫
+// to:到哪去
+// from:從哪來
+// next():放行
+// 定義數組，存放需要權限頁面
+const authUrls = ['/pay', '/myorder']
+router.beforeEach((to, from, next) => {
+  // 看to.path是否在 authUrls路徑？
+  if (!authUrls.includes(to.path)) {
+    next()
+  } else {
+    const token = store.getters.token
+    if (token) {
+      next()
+    } else {
+      next('/login')
+    }
+  }
 })
 
 export default router
