@@ -4,9 +4,9 @@
     <van-nav-bar title="商品搜尋" left-arrow />
 
     <!-- 2. 搜尋列：show-action 在右邊留出按鈕位置，按鈕內容寫在 #action 插槽 -->
-    <van-search v-model="search" show-action shape="round" background="#fff" placeholder="請輸入搜尋關鍵字" clearable>
+    <van-search  v-model="search" show-action shape="round" background="#fff" placeholder="請輸入搜尋關鍵字" clearable>
       <template #action>
-        <div @click="goSearch(search)" class="search-btn">搜尋</div>
+        <div  @click="goSearch(search)" class="search-btn">搜尋</div>
       </template>
     </van-search>
 
@@ -46,6 +46,7 @@ export default {
       }
       this.history.unshift(key)
       setHistoryList(this.history)
+      this.$router.push(`/searchlist?search=${key}`)
     },
     clear () {
       this.history = []
