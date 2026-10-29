@@ -27,13 +27,14 @@
 </template>
 
 <script>
+import { getHistoryList, setHistoryList, removeHistoryList } from '@/utils/storages'
 export default {
   name: 'SearchIndex',
   components: {},
   data () {
     return {
       search: '',
-      history: ['手機', '白酒', '電視']
+      history: getHistoryList()
     }
   },
   methods: {
@@ -44,9 +45,11 @@ export default {
         this.history.splice(index, 1)
       }
       this.history.unshift(key)
+      setHistoryList(this.history)
     },
     clear () {
       this.history = []
+      removeHistoryList()
     }
   }
 }
