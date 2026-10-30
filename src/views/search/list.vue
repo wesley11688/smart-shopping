@@ -1,7 +1,7 @@
 <template>
   <div class="search-list">
     <!-- 1. 導覽列：fixed 固定在頂部，點返回箭頭回上一頁之後再綁 -->
-    <van-nav-bar title="商品列表" left-arrow fixed placeholder />
+    <van-nav-bar @click-left="$router.go(-1)" title="商品列表" left-arrow fixed placeholder />
 
     <!-- 2. 搜尋列：readonly 只能點，文字之後換成網址上的 search 參數；右邊的格子圖示放在 #action 插槽 -->
     <van-search
@@ -12,7 +12,7 @@
       show-action
       @click="$router.push('/search')">
       <template #action>
-        <van-icon class="tool" name="apps-o" />
+        <van-icon @click="$router.push('/categray')" class="tool" name="apps-o" />
       </template>
     </van-search>
 
@@ -44,6 +44,7 @@ export default {
   },
   async created () {
     const { data: { list } } = await getProList({
+      categoryId: this.$route.query.categoryId,
       goodsName: this.querySearch,
       page: this.page
     })
