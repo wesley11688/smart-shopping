@@ -67,7 +67,7 @@
 
     <!-- 6. 底部操作列：fixed 固定在底部，首頁、購物車、加入購物車、立刻購買 -->
     <div class="footer">
-      <div class="icon-home">
+      <div class="icon-home" @click="$router.push('/')">
         <van-icon name="wap-home-o" />
         <span>首頁</span>
       </div>
@@ -75,15 +75,54 @@
         <van-icon name="shopping-cart-o" />
         <span>購物車</span>
       </div>
-      <div class="btn-add">加入購物車</div>
-      <div class="btn-buy">立刻購買</div>
+      <div @click="addFn" class="btn-add">加入購物車</div>
+      <div @click="onBuy" class="btn-buy">立刻購買</div>
     </div>
+    <!-- 7. 加入購物車／立刻購買彈窗：不用 actions，改用預設插槽放自己的內容 -->
+    <van-action-sheet :title="mode === 'cart' ? '加入購物車' : '立即購買'"  v-model="show">
+      <div class="product">
+        <!-- 7-1. 商品圖、價格、庫存：先放佔位內容，之後換成 detail 的資料 -->
+        <div class="product-title">
+          <div class="left">
+            <img :src="detail.goods_images" alt="" />
+          </div>
+          <div class="right">
+            <div class="price">
+              <span>¥</span>
+              <span class="nowprice">{{ detail.goods_price_min  }}</span>
+            </div>
+            <div class="count">
+              <span>庫存</span>
+              <span>{{ detail.stock_total }}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 7-2. 數量：先放靜態的加減框，之後換成數字框組件 -->
+        <div class="num-box">
+          <span>數量</span>
+          <div class="count-box">
+            <button class="minus">-</button>
+            <input class="inp" type="text" value="1" />
+            <button class="add">+</button>
+          </div>
+        </div>
+
+        <!-- 7-3. 按鈕：跟著 mode 顯示「加入購物車」或「立刻購買」；庫存為 0 時之後改成顯示 .btn-none -->
+        <div class="showbtn">
+          <div class="btn" v-if="mode === 'cart'">加入購物車</div>
+          <div class="btn now" v-else>立刻購買</div>
+        </div>
+        <!-- <div class="btn-none">該商品已搶完</div> -->
+      </div>
+    </van-action-sheet>
   </div>
 </template>
 
 <script>
 import { getProDetail, getProComment } from '@/api/product'
 import defaultImg from '@/assets/default-avatar.svg'
+
 export default {
   name: 'ProdetailIndex',
   computed: {
@@ -103,7 +142,9 @@ export default {
       images: [],
       total: 0,
       commentList: [],
-      defaultImg
+      defaultImg,
+      show: false,
+      mode: 'cart'
     }
   },
   methods: {
@@ -119,6 +160,14 @@ export default {
       const { data: { list, total } } = await getProComment(this.goodsId, 3)
       this.commentList = list
       this.total = total
+    },
+    addFn () {
+      this.mode = 'cart'
+      this.show = true
+    },
+    onBuy () {
+      this.mode = 'byNow'
+      this.show = true
     }
   }
 }
@@ -338,6 +387,100 @@ export default {
   .btn-buy {
     color: #fff;
     background: @blue;
+  }
+}
+
+// 加入購物車／立刻購買彈窗：商品圖＋價格庫存、數量、底部膠囊按鈕
+.product {
+  padding: 8px 16px 16px;
+  color: @text;
+
+  .product-title {
+    display: flex;
+    align-items: flex-end;
+    .left img {
+      width: 90px;
+      height: 90px;
+      object-fit: contain;
+      background: @card;
+      border-radius: 12px;
+    }
+    .right {
+      flex: 1;
+      padding-left: 12px;
+    }
+    .price {
+      color: @text;
+      font-size: 14px;
+      font-weight: 600;
+      .nowprice {
+        font-size: 24px;
+        margin-left: 2px;
+      }
+    }
+    .count {
+      margin-top: 4px;
+      font-size: 13px;
+      color: @muted;
+      span + span {
+        margin-left: 4px;
+      }
+    }
+  }
+
+  // 數量：左邊文字、右邊加減框
+  .num-box {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin: 20px 0;
+    font-size: 15px;
+
+    .count-box {
+      display: flex;
+      align-items: center;
+      button,
+      .inp {
+        height: 30px;
+        border: none;
+        background: @card;
+        color: @text;
+        font-size: 15px;
+        text-align: center;
+      }
+      button {
+        width: 30px;
+        border-radius: 8px;
+      }
+      .inp {
+        width: 44px;
+        margin: 0 4px;
+        border-radius: 8px;
+      }
+    }
+  }
+
+  // 按鈕：整排膠囊，加入購物車用淺藍底、立刻購買用藍底
+  .btn,
+  .btn-none {
+    height: 44px;
+    line-height: 44px;
+    text-align: center;
+    font-size: 15px;
+    font-weight: 600;
+    border-radius: 999px;
+  }
+  .btn {
+    color: @blue;
+    background: #e8f1fc;
+  }
+  .btn.now {
+    color: #fff;
+    background: @blue;
+  }
+  .btn-none {
+    color: @muted;
+    background: @card;
   }
 }
 </style>
