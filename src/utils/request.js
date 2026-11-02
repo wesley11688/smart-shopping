@@ -1,5 +1,6 @@
 import axios from 'axios'
 import { Toast } from 'vant'
+import store from '@/store'
 
 const instance = axios.create({
   baseURL: 'https://smart-shop.itheima.net/index.php?s=/api/',
@@ -16,6 +17,11 @@ instance.interceptors.request.use(
       forbidClick: true,
       duration: 0
     })
+    const token = store.getters.token
+    if (token) {
+      config.headers['Access-token'] = token
+      config.headers.platform = 'H5'
+    }
     return config
   },
   function (error) {

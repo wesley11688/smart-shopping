@@ -1,6 +1,6 @@
 // 按需導入
 import Vue from 'vue'
-import { ActionSheet, Tabbar, TabbarItem, Icon, NavBar, Toast, Search, Swipe, SwipeItem, Grid, GridItem, Rate } from 'vant'
+import { Checkbox, Dialog, ActionSheet, Tabbar, TabbarItem, Icon, NavBar, Toast, Search, Swipe, SwipeItem, Grid, GridItem, Rate } from 'vant'
 Vue.use(Tabbar)
 Vue.use(TabbarItem)
 Vue.use(Icon)
@@ -15,3 +15,6 @@ Vue.use(GridItem)
 // 商品詳情頁用到的組件
 Vue.use(Rate)
 Vue.use(ActionSheet)
+Vue.use(Dialog)
+// 購物車頁用到的組件
+Vue.use(Checkbox)

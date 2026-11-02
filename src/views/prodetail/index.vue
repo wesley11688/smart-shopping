@@ -71,7 +71,9 @@
         <van-icon name="wap-home-o" />
         <span>首頁</span>
       </div>
-      <div class="icon-cart">
+      <div @click="$router.push('/cart')" class="icon-cart">
+        <!-- 購物車角標：先放佔位數字，之後換成購物車總件數，件數為 0 時不顯示 -->
+        <span class="num">{{ cartTotal  }}</span>
         <van-icon name="shopping-cart-o" />
         <span>購物車</span>
       </div>
@@ -84,7 +86,7 @@
         <!-- 7-1. 商品圖、價格、庫存：先放佔位內容，之後換成 detail 的資料 -->
         <div class="product-title">
           <div class="left">
-            <img :src="detail.goods_images" alt="" />
+           <img :src="detail.goods_image" alt="" />
           </div>
           <div class="right">
             <div class="price">
@@ -101,16 +103,12 @@
         <!-- 7-2. 數量：先放靜態的加減框，之後換成數字框組件 -->
         <div class="num-box">
           <span>數量</span>
-          <div class="count-box">
-            <button class="minus">-</button>
-            <input class="inp" type="text" value="1" />
-            <button class="add">+</button>
-          </div>
+          <CountBox v-model="count"></CountBox>
         </div>
 
         <!-- 7-3. 按鈕：跟著 mode 顯示「加入購物車」或「立刻購買」；庫存為 0 時之後改成顯示 .btn-none -->
         <div class="showbtn">
-          <div class="btn" v-if="mode === 'cart'">加入購物車</div>
+          <div @click="addCart" class="btn" v-if="mode === 'cart'">加入購物車</div>
           <div class="btn now" v-else>立刻購買</div>
         </div>
         <!-- <div class="btn-none">該商品已搶完</div> -->
@@ -122,9 +120,14 @@
 <script>
 import { getProDetail, getProComment } from '@/api/product'
 import defaultImg from '@/assets/default-avatar.svg'
-
+import CountBox from '@/components/CountBox.vue'
+import { addCart } from '@/api/cart'
+import { Toast } from 'vant'
 export default {
   name: 'ProdetailIndex',
+  components: {
+    CountBox
+  },
   computed: {
     goodsId () {
       return this.$route.params.id
@@ -144,7 +147,9 @@ export default {
       commentList: [],
       defaultImg,
       show: false,
-      mode: 'cart'
+      mode: 'cart',
+      count: 1,
+      cartTotal: 0
     }
   },
   methods: {
@@ -168,6 +173,37 @@ export default {
     onBuy () {
       this.mode = 'byNow'
       this.show = true
+    },
+    async addCart () {
+      if (!this.$store.getters.token) {
+        console.log('請先登入')
+        this.$dialog.confirm({
+          title: '溫馨提示',
+          message: '需要先登入才能操作喔',
+          confirmButtonText: '確認',
+          cancelButtonText: '再逛逛'
+
+        })
+          .then(() => {
+            this.$router.replace({
+              path: '/login',
+              query: {
+                backUrl: this.$route.fullPath
+              }
+            })
+          })
+          .catch(() => {
+
+          })
+        return
+      }
+      const { data } = await addCart(
+        this.goodsId,
+        this.count,
+        this.detail.skuList[0].goods_sku_id)
+      this.cartTotal = data.cartTotal
+      Toast('添加購物車成功')
+      this.show = false
     }
   }
 }
@@ -366,6 +402,28 @@ export default {
     .van-icon {
       font-size: 22px;
       color: @text;
+    }
+  }
+
+  // 購物車角標：疊在圖示右上角的紅色膠囊，兩位數時自動變寬
+  .icon-cart {
+    position: relative;
+    .num {
+      position: absolute;
+      top: -4px;
+      left: 26px;
+      // 寬 10 + 左右 padding 6 = 高 16，一位數時剛好是正圓
+      min-width: 10px;
+      height: 16px;
+      padding: 0 3px;
+      line-height: 16px;
+      font-size: 10px;
+      font-weight: 600;
+      text-align: center;
+      color: #fff;
+      background: #ff3b30;
+      border: 1.5px solid #fff;
+      border-radius: 999px;
     }
   }
 

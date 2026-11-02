@@ -116,7 +116,8 @@ export default {
       console.log(res)
       if (res.status === 200) {
         Toast('登錄成功')
-        this.$router.push('/')
+        const url = this.$route.query.backUrl || '/'
+        this.$router.replace(url)
       }
     }
 
