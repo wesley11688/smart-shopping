@@ -8,7 +8,7 @@
       <!-- 2-1. 資訊列：商品總數、編輯按鈕 -->
       <div class="cart-title">
         <span class="all">共 <i>{{ cartTotal }}</i> 件商品</span>
-        <span class="edit">
+        <span @click="isEdit = !isEdit" class="edit">
           <van-icon name="edit" />
           編輯
         </span>
@@ -45,7 +45,7 @@
           </div>
           <!-- 結算 / 刪除：isEdit 為 true 時顯示刪除 -->
           <div v-if="!isEdit" class="goPay" :class="{ disabled: selCartTotal === 0 }">結算({{ selCartTotal }})</div>
-          <div v-else class="delete" :class="{ disabled: selCartTotal === 0 }">刪除({{ selCartTotal }})</div>
+          <div v-else @click="handleDel" class="delete" :class="{ disabled: selCartTotal === 0 }">刪除({{ selCartTotal }})</div>
         </div>
       </div>
     </div>
@@ -94,6 +94,18 @@ export default {
     // 全選：現在全勾就全部取消，否則全部勾上
     toggleCheckAll () {
       this.$store.commit('cart/toggleCheckAllAction', !this.isAllChecked)
+    },
+    handleDel () {
+      if (this.selCartTotal === 0) return
+      // 後端要的是每一筆購物車紀錄的 id 陣列
+      const cartIds = this.selCartList.map(item => item.id)
+      this.$store.dispatch('cart/deleteCartAction', { cartIds })
+    }
+  },
+  watch: {
+    // 進入編輯時全部取消勾選，離開編輯時全部勾回來
+    isEdit (val) {
+      this.$store.commit('cart/toggleCheckAllAction', !val)
     }
   }
 }
