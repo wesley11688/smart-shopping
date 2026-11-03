@@ -4,7 +4,7 @@
     <van-nav-bar @click-left="$router.go(-1)" title="購物車" left-arrow fixed placeholder />
 
     <!-- 2. 有商品時顯示（佔位：之後改成判斷購物車列表長度） -->
-    <div v-if="true">
+    <div v-if="isLogin && cartList.length > 0" class="cart-content">
       <!-- 2-1. 資訊列：商品總數、編輯按鈕 -->
       <div class="cart-title">
         <span class="all">共 <i>{{ cartTotal }}</i> 件商品</span>
@@ -50,11 +50,11 @@
       </div>
     </div>
 
-    <!-- 3. 空購物車（佔位：先用 v-if="false" 藏起來） -->
-    <div v-if="false" class="empty-cart">
+    <!-- 3. 空購物車：沒登入或列表是空的時候顯示 -->
+    <div v-else class="empty-cart">
       <van-icon name="shopping-cart-o" class="empty-icon" />
       <div class="tips">您的購物車是空的，快去逛逛吧</div>
-      <div class="btn">去逛逛</div>
+      <div @click="$router.push('/')" class="btn">去逛逛</div>
     </div>
   </div>
 </template>
@@ -81,7 +81,10 @@ export default {
   },
   computed: {
     ...mapState('cart', ['cartList']),
-    ...mapGetters('cart', ['cartTotal', 'selCartList', 'selCartTotal', 'selCartPrice', 'isAllChecked'])
+    ...mapGetters('cart', ['cartTotal', 'selCartList', 'selCartTotal', 'selCartPrice', 'isAllChecked']),
+    isLogin () {
+      return this.$store.getters.token
+    }
   },
   methods: {
     // 編輯按鈕切換
@@ -95,11 +98,12 @@ export default {
     toggleCheckAll () {
       this.$store.commit('cart/toggleCheckAllAction', !this.isAllChecked)
     },
-    handleDel () {
+    async handleDel () {
       if (this.selCartTotal === 0) return
-      // 後端要的是每一筆購物車紀錄的 id 陣列
       const cartIds = this.selCartList.map(item => item.id)
-      this.$store.dispatch('cart/deleteCartAction', { cartIds })
+      await this.$store.dispatch('cart/deleteCartAction', { cartIds })
+      this.$toast.success('刪除成功')
+      this.isEdit = false
     }
   },
   watch: {
