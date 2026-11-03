@@ -25,7 +25,7 @@
             <span class="tit text-ellipsis-2">{{ item.goods.goods_name  }}</span>
             <span class="bottom">
               <div class="price">¥ <span>{{ item.goods.goods_price_min }}</span></div>
-              <CountBox :value="item.goods_num" @input="changeCount($event, item)"></CountBox>
+              <CountBox :value="item.goods_num" @input="(value) => { changeCount(value, item.goods_id, item.goods_sku_id) }"></CountBox>
             </span>
           </div>
         </div>
@@ -85,12 +85,8 @@ export default {
   },
   methods: {
     // 編輯按鈕切換
-    changeCount (goodsNum, item) {
-      this.$store.dispatch('cart/changeCountAction', {
-        goodsId: item.goods_id,
-        goodsNum,
-        goodsSkuId: item.goods_sku_id
-      })
+    changeCount (goodsNum, goodsId, goodsSkuId) {
+      this.$store.dispatch('cart/changeCountAction', { goodsNum, goodsId, goodsSkuId })
     },
     toggleCheck (goodsId) {
       this.$store.commit('cart/toggleCheckAction', goodsId)
