@@ -30,13 +30,14 @@
 
     <!-- 操作按鈕：依訂單狀態顯示（判斷寫在 computed 的 status）
          待支付：取消訂單、立刻付款；待發貨：申請取消；待收貨：確認收貨；待評價：評價
-         待取消、已取消、已完成：沒有按鈕，整列藏起來（點擊功能還沒接） -->
+         待取消、已取消、已完成：沒有按鈕，整列藏起來
+         取消訂單、申請取消已接上；立刻付款、確認收貨、評價還沒接 -->
     <div class="actions" v-if="status !== 'none'">
       <template v-if="status === 'payment'">
-        <span class="btn">取消訂單</span>
+        <span class="btn" @click="handleCancel">取消訂單</span>
         <span class="btn primary">立刻付款</span>
       </template>
-      <span class="btn" v-else-if="status === 'delivery'">申請取消</span>
+      <span class="btn" v-else-if="status === 'delivery'" @click="handleCancel">申請取消</span>
       <span class="btn primary" v-else-if="status === 'received'">確認收貨</span>
       <span class="btn primary" v-else-if="status === 'comment'">評價</span>
     </div>
@@ -44,6 +45,8 @@
 </template>
 
 <script>
+import { cancelOrder } from '@/api/order.js'
+
 export default {
   name: 'OrderListItem',
   props: {
@@ -63,6 +66,26 @@ export default {
       if (receipt === 10) return 'received' // 已發貨、還沒收貨
       if (order === 30 && isComment === 0) return 'comment' // 已完成、還沒評價
       return 'none'
+    }
+  },
+  methods: {
+    // 取消訂單（待支付）和申請取消（待發貨）共用：
+    // 1. 先用確認框問一次，按「取消」會 reject，用 try/catch 接住，直接結束
+    // 2. 呼叫 order/cancel，成功後 $emit('refresh') 通知父組件重新抓列表
+    //    （列表資料在 myorder/index.vue，卡片不能自己改 props）
+    async handleCancel () {
+      const isPaid = this.status === 'delivery'
+      try {
+        await this.$dialog.confirm({
+          title: isPaid ? '申請取消' : '取消訂單',
+          message: isPaid ? '訂單已付款，送出後要等商家審核，確定要申請取消嗎？' : '確定要取消這筆訂單嗎？'
+        })
+      } catch {
+        return // 按了確認框的「取消」
+      }
+      await cancelOrder(this.item.order_id)
+      this.$toast(isPaid ? '已送出申請' : '訂單已取消')
+      this.$emit('refresh')
     }
   }
 }

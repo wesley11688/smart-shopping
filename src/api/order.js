@@ -31,3 +31,11 @@ export const getOrderList = (dataType, page) => {
     }
   })
 }
+
+// 取消訂單／申請取消（同一支接口）：還沒付款會直接取消（order_status 20），
+// 已付款還沒發貨會變成待取消（order_status 21），等商家審核
+export const cancelOrder = (orderId) => {
+  return instance.post('/order/cancel', {
+    orderId
+  })
+}

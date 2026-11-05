@@ -13,9 +13,10 @@
       <van-tab title="待評價" name="comment"></van-tab>
     </van-tabs>
 
-    <!-- 3. 訂單列表：每筆訂單交給 OrderListItem 組件渲染 -->
+    <!-- 3. 訂單列表：每筆訂單交給 OrderListItem 組件渲染
+         卡片取消訂單成功後會 $emit('refresh')，這裡重新抓一次列表 -->
     <div class="list">
-      <OrderListItem v-for="item in list" :key="item.order_id" :item="item" />
+      <OrderListItem v-for="item in list" :key="item.order_id" :item="item" @refresh="getList" />
     </div>
 
     <!-- 4. 沒有訂單時顯示 -->
