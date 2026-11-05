@@ -1,6 +1,6 @@
 // 按需導入
 import Vue from 'vue'
-import { Checkbox, Dialog, ActionSheet, Tabbar, TabbarItem, Icon, NavBar, Toast, Search, Swipe, SwipeItem, Grid, GridItem, Rate } from 'vant'
+import { Tabs, Tab, Field, Popup, Cascader, Tag, Checkbox, Dialog, ActionSheet, Tabbar, TabbarItem, Icon, NavBar, Toast, Search, Swipe, SwipeItem, Grid, GridItem, Rate } from 'vant'
 Vue.use(Tabbar)
 Vue.use(TabbarItem)
 Vue.use(Icon)
@@ -18,3 +18,11 @@ Vue.use(ActionSheet)
 Vue.use(Dialog)
 // 購物車頁用到的組件
 Vue.use(Checkbox)
+// 收貨地址頁用到的組件
+Vue.use(Field)
+Vue.use(Popup)
+Vue.use(Cascader)
+Vue.use(Tag)
+// 我的訂單頁用到的組件
+Vue.use(Tabs)
+Vue.use(Tab)

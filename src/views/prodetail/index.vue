@@ -109,7 +109,7 @@
         <!-- 7-3. 按鈕：跟著 mode 顯示「加入購物車」或「立刻購買」；庫存為 0 時之後改成顯示 .btn-none -->
         <div class="showbtn">
           <div @click="addCart" class="btn" v-if="mode === 'cart'">加入購物車</div>
-          <div class="btn now" v-else>立刻購買</div>
+          <div @click="goBuyNow" class="btn now" v-else>立刻購買</div>
         </div>
         <!-- <div class="btn-none">該商品已搶完</div> -->
       </div>
@@ -123,8 +123,10 @@ import defaultImg from '@/assets/default-avatar.svg'
 import CountBox from '@/components/CountBox.vue'
 import { addCart } from '@/api/cart'
 import { Toast } from 'vant'
+import LoginConfig from '@/mixins/LoginConfig'
 export default {
   name: 'ProdetailIndex',
+  mixins: [LoginConfig],
   components: {
     CountBox
   },
@@ -170,33 +172,27 @@ export default {
       this.mode = 'cart'
       this.show = true
     },
+    // 底部「立刻購買」只負責打開彈窗，讓使用者先選數量
     onBuy () {
-      this.mode = 'byNow'
+      this.mode = 'buyNow'
       this.show = true
     },
+    // 彈窗裡的「立刻購買」才跳結算頁；後端的立即購買模式叫 buyNow（拼成 byNow 會回 500「结算模式不合法」）
+    goBuyNow () {
+      // loginConfirm 來自 mixin：沒登入會跳提示框並回傳 true
+      if (this.loginConfirm()) return
+      this.$router.push({
+        path: '/pay',
+        query: {
+          mode: 'buyNow',
+          goodsId: this.goodsId,
+          goodsSkuId: this.detail.skuList[0].goods_sku_id,
+          goodsNum: this.count
+        }
+      })
+    },
     async addCart () {
-      if (!this.$store.getters.token) {
-        console.log('請先登入')
-        this.$dialog.confirm({
-          title: '溫馨提示',
-          message: '需要先登入才能操作喔',
-          confirmButtonText: '確認',
-          cancelButtonText: '再逛逛'
-
-        })
-          .then(() => {
-            this.$router.replace({
-              path: '/login',
-              query: {
-                backUrl: this.$route.fullPath
-              }
-            })
-          })
-          .catch(() => {
-
-          })
-        return
-      }
+      if (this.loginConfirm()) return
       const { data } = await addCart(
         this.goodsId,
         this.count,

@@ -7,6 +7,8 @@ import Searchlist from '@/views/search/list.vue'
 import Prodetail from '@/views/prodetail/index.vue'
 import Myorder from '@/views/myorder/index.vue'
 import Pay from '@/views/pay/index.vue'
+import Address from '@/views/address/index.vue'
+import AddressEdit from '@/views/address/edit.vue'
 // 二級路由
 import Home from '@/views/layout/home.vue'
 import Category from '@/views/layout/categroy.vue'
@@ -34,7 +36,10 @@ const routes = [
   { path: '/searchlist', component: Searchlist },
   { path: '/Prodetail/:id', component: Prodetail },
   { path: '/myorder', component: Myorder },
-  { path: '/pay', component: Pay }
+  { path: '/pay', component: Pay },
+  // 收貨地址：列表、新增／編輯
+  { path: '/address', component: Address },
+  { path: '/address/edit', component: AddressEdit }
 
 ]
 
@@ -46,7 +51,7 @@ const router = new VueRouter({
 // from:從哪來
 // next():放行
 // 定義數組，存放需要權限頁面
-const authUrls = ['/pay', '/myorder']
+const authUrls = ['/pay', '/myorder', '/address', '/address/edit']
 router.beforeEach((to, from, next) => {
   // 看to.path是否在 authUrls路徑？
   if (!authUrls.includes(to.path)) {

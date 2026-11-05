@@ -44,7 +44,7 @@
             <span>¥ <i class="totalPrice">{{ selCartPrice  }}</i></span>
           </div>
           <!-- 結算 / 刪除：isEdit 為 true 時顯示刪除 -->
-          <div v-if="!isEdit" class="goPay" :class="{ disabled: selCartTotal === 0 }">結算({{ selCartTotal }})</div>
+          <div v-if="!isEdit" @click="goPay" class="goPay" :class="{ disabled: selCartTotal === 0 }">結算({{ selCartTotal }})</div>
           <div v-else @click="handleDel" class="delete" :class="{ disabled: selCartTotal === 0 }">刪除({{ selCartTotal }})</div>
         </div>
       </div>
@@ -104,6 +104,16 @@ export default {
       await this.$store.dispatch('cart/deleteCartAction', { cartIds })
       this.$toast.success('刪除成功')
       this.isEdit = false
+    },
+    goPay () {
+      if (this.selCartTotal === 0) return
+      this.$router.push({
+        path: '/pay',
+        query: {
+          mode: 'cart',
+          cartIds: this.selCartList.map(item => item.id).join(',')
+        }
+      })
     }
   },
   watch: {
