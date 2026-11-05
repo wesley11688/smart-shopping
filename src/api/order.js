@@ -22,3 +22,12 @@ export const submitOrder = (mode, obj) => {
     ...obj
   })
 }
+
+export const getOrderList = (dataType, page) => {
+  return instance.get('/order/list', {
+    params: {
+      dataType,
+      page
+    }
+  })
+}

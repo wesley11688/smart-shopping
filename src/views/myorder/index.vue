@@ -4,8 +4,8 @@
     <van-nav-bar @click-left="$router.go(-1)" title="我的訂單" left-arrow fixed placeholder />
 
     <!-- 2. 分類標籤：sticky 捲動時黏在導覽列下方（offset-top 是導覽列高度）
-         （佔位：之後用 v-model 綁目前的分類，name 對應接口的 dataType） -->
-    <van-tabs sticky :offset-top="46" color="#0071e3" title-active-color="#0071e3">
+         v-model 綁目前的分類 active，name 就是接口的 dataType -->
+    <van-tabs v-model="active" sticky :offset-top="46" color="#0071e3" title-active-color="#0071e3">
       <van-tab title="全部" name="all"></van-tab>
       <van-tab title="待支付" name="payment"></van-tab>
       <van-tab title="待發貨" name="delivery"></van-tab>
@@ -13,47 +13,13 @@
       <van-tab title="待評價" name="comment"></van-tab>
     </van-tabs>
 
-    <!-- 3. 訂單列表（佔位 2 筆，之後改成 v-for 渲染訂單接口的資料） -->
+    <!-- 3. 訂單列表：每筆訂單交給 OrderListItem 組件渲染 -->
     <div class="list">
-      <div class="order-item" v-for="(item, index) in 2" :key="index">
-        <!-- 訂單頭：下單時間、訂單狀態 -->
-        <div class="head">
-          <span class="time">2026-11-06 12:00:00</span>
-          <span class="status">待支付</span>
-        </div>
-
-        <!-- 商品：一筆訂單可能有多件商品（佔位 1 件） -->
-        <div class="goods">
-          <div class="goods-item" v-for="(goods, i) in 1" :key="i">
-            <div class="left">
-              <!-- 佔位圖：之後換成 <img :src="商品圖片"> -->
-              <div class="img-placeholder"></div>
-            </div>
-            <div class="right">
-              <p class="tit text-ellipsis-2">商品名稱佔位文字，最多顯示兩行，超出的部分用省略號</p>
-              <p class="info">
-                <span class="count">x1</span>
-                <span class="price">¥ 9899.00</span>
-              </p>
-            </div>
-          </div>
-        </div>
-
-        <!-- 合計 -->
-        <div class="total">
-          共 1 件商品，總金額 <span class="money">¥ 9899.00</span>
-        </div>
-
-        <!-- 操作按鈕：之後依訂單狀態顯示不同按鈕（待支付：立刻付款；待收貨：確認收貨；待評價：評價） -->
-        <div class="actions">
-          <span class="btn">申請取消</span>
-          <span class="btn primary">立刻付款</span>
-        </div>
-      </div>
+      <OrderListItem v-for="item in list" :key="item.order_id" :item="item" />
     </div>
 
-    <!-- 4. 沒有訂單時顯示（佔位：先用 v-if="false" 藏起來，之後改成判斷列表長度） -->
-    <div class="empty" v-if="false">
+    <!-- 4. 沒有訂單時顯示 -->
+    <div class="empty" v-if="list.length === 0">
       <van-icon name="orders-o" class="empty-icon" />
       <p>還沒有訂單</p>
     </div>
@@ -61,12 +27,42 @@
 </template>
 
 <script>
+import OrderListItem from '@/components/OrderListItem.vue'
+import { getOrderList } from '@/api/order.js'
+
 export default {
   name: 'MyorderIndex',
-  data () {
-    return {}
+  components: {
+    OrderListItem
   },
-  methods: {}
+  data () {
+    return {
+      active: this.$route.query.dataType || 'all', // 目前的分類標籤，預設是「全部」
+      page: 1,
+      list: []
+    }
+  },
+  methods: {
+    async getList () {
+      const { data: { list } } = await getOrderList(this.active, this.page)
+      list.data.forEach(item => {
+        item.total_num = 0
+        item.goods.forEach(goods => {
+          item.total_num += goods.total_num
+        })
+      })
+      this.list = list.data
+    }
+  },
+  watch: {
+    active: {
+      immediate: true,
+      handler () {
+        this.page = 1
+        this.getList()
+      }
+    }
+  }
 }
 </script>
 
@@ -108,128 +104,9 @@ export default {
   }
 }
 
-// 名稱最多兩行，超出用省略號
-.text-ellipsis-2 {
-  display: -webkit-box;
-  overflow: hidden;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-}
-
-// 3. 訂單卡片
+// 3. 訂單列表（卡片樣式在 OrderListItem 組件）
 .list {
   padding: 0 12px;
-}
-
-.order-item {
-  margin-top: 12px;
-  padding: 0 16px;
-  background: #fff;
-  border-radius: 14px;
-
-  // 訂單頭：時間靠左、狀態靠右
-  .head {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 14px 0 10px;
-    font-size: 13px;
-    .time {
-      color: @muted;
-    }
-    .status {
-      font-weight: 600;
-      color: @blue;
-    }
-  }
-
-  // 商品
-  .goods-item {
-    display: flex;
-    padding: 10px 0;
-    & + .goods-item {
-      border-top: 1px solid #e5e5ea;
-    }
-    .left {
-      flex-shrink: 0;
-      width: 72px;
-      height: 72px;
-      margin-right: 12px;
-      overflow: hidden;
-      background: @card;
-      border-radius: 10px;
-      img,
-      .img-placeholder {
-        display: block;
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-      }
-    }
-    .right {
-      display: flex;
-      flex: 1;
-      flex-direction: column;
-      justify-content: space-between;
-      min-width: 0;
-      .tit {
-        margin: 0;
-        font-size: 14px;
-        line-height: 1.4;
-      }
-      .info {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin: 0;
-        font-size: 13px;
-        .count {
-          color: @muted;
-        }
-        .price {
-          font-weight: 600;
-        }
-      }
-    }
-  }
-
-  // 合計：靠右
-  .total {
-    padding: 10px 0;
-    text-align: right;
-    font-size: 13px;
-    color: @muted;
-    border-top: 1px solid #e5e5ea;
-    .money {
-      margin-left: 4px;
-      font-size: 16px;
-      font-weight: 600;
-      color: @text;
-    }
-  }
-
-  // 操作按鈕：靠右排列，膠囊形
-  .actions {
-    display: flex;
-    justify-content: flex-end;
-    padding: 4px 0 14px;
-    .btn {
-      margin-left: 10px;
-      padding: 6px 14px;
-      font-size: 13px;
-      color: @text;
-      border: 1px solid #d2d2d7;
-      border-radius: 999px;
-      &:active {
-        opacity: 0.7;
-      }
-    }
-    .primary {
-      color: #fff;
-      background: @blue;
-      border-color: @blue;
-    }
-  }
 }
 
 // 4. 空狀態
